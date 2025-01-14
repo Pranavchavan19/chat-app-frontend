@@ -547,7 +547,6 @@
 
 
 
-
 import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
@@ -570,48 +569,61 @@ const ChatPage = () => {
   } = useChatContext();
 
   const navigate = useNavigate();
+  useEffect(() => {
+    if (!connected) {
+      navigate("/");
+    }
+  }, [connected, roomId, currentUser]);
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const inputRef = useRef(null);
   const chatBoxRef = useRef(null);
   const [stompClient, setStompClient] = useState(null);
 
-  // Ensure WebSocket is connected only once per roomId
+  // Connect WebSocket when the component mounts
   useEffect(() => {
-    if (connected && roomId) {
-      const connectWebSocket = () => {
-        const sock = new SockJS(`${baseURL}/chat`);
-        const client = Stomp.over(sock);
+    const connectWebSocket = () => {
+      const sock = new SockJS(`${baseURL}/chat`);
+      const client = Stomp.over(sock);
 
-        client.connect({}, () => {
-          setStompClient(client);
-          toast.success("Connected");
+      client.connect({}, () => {
+        setStompClient(client);
+        toast.success("Connected");
 
-          // Subscribe to room messages (this will push messages to all clients)
-          client.subscribe(`/topic/room/${roomId}`, (message) => {
-            const newMessage = JSON.parse(message.body);
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
-          });
-
-          // Fetch initial messages once WebSocket is connected
-          async function loadMessages() {
-            try {
-              const initialMessages = await getMessagess(roomId);
-              setMessages(initialMessages);
-            } catch (error) {
-              console.log("Error loading messages:", error);
-            }
-          }
-
-          loadMessages();
+        // Subscribe to room messages
+        client.subscribe(`/topic/room/${roomId}`, (message) => {
+          const newMessage = JSON.parse(message.body);
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
         });
-      };
 
+        // Fetch initial messages once the WebSocket is connected
+        async function loadMessages() {
+          try {
+            const initialMessages = await getMessagess(roomId);
+            setMessages(initialMessages);
+          } catch (error) {
+            console.log("Error loading messages:", error);
+          }
+        }
+
+        loadMessages();
+      });
+    };
+
+    if (connected) {
       connectWebSocket();
     }
-  }, [roomId, connected]);
 
-  // Scroll to the bottom of the chat when messages change
+    // Cleanup on component unmount
+    return () => {
+      if (stompClient) {
+        stompClient.disconnect();
+      }
+    };
+  }, [roomId, connected, stompClient]);
+
+  // Scroll to bottom of chat when new messages arrive
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scroll({
@@ -635,11 +647,7 @@ const ChatPage = () => {
       setMessages((prevMessages) => [...prevMessages, message]);
 
       // Send the message via WebSocket to the backend
-      stompClient.send(
-        `/app/sendMessage/${roomId}`,
-        {},
-        JSON.stringify(message)
-      );
+      stompClient.send(`/app/sendMessage/${roomId}`, {}, JSON.stringify(message));
 
       // Clear the input field
       setInput("");
@@ -657,7 +665,6 @@ const ChatPage = () => {
 
   return (
     <div className="relative">
-      {/* Header for Laptop (Visible on larger screens) */}
       <header className="dark:border-gray-700 fixed w-full dark:bg-gray-900 py-5 shadow flex justify-between items-center px-10 hidden sm:flex">
         <div>
           <h1 className="text-xl sm:text-2xl font-semibold">
@@ -679,11 +686,8 @@ const ChatPage = () => {
         </div>
       </header>
 
-      {/* Chat Box */}
-      <main
-        ref={chatBoxRef}
-        className="py-20 px-10 w-2/3 dark:bg-slate-600 mx-auto h-screen overflow-auto"
-      >
+      {/* Mobile Chat Layout */}
+      <main ref={chatBoxRef} className="py-16 px-4 w-full dark:bg-slate-600 mx-auto h-screen overflow-auto sm:hidden">
         {messages.map((message, index) => (
           <div
             key={index}
@@ -698,15 +702,13 @@ const ChatPage = () => {
             >
               <div className="flex flex-row gap-2">
                 <img
-                  className="h-10 w-10"
+                  className="h-8 w-8"
                   src={"https://avatar.iran.liara.run/public/43"}
                   alt=""
                 />
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm sm:text-base font-bold">
-                    {message.sender}
-                  </p>
-                  <p className="text-sm sm:text-base">{message.content}</p>
+                  <p className="text-xs sm:text-sm font-bold">{message.sender}</p>
+                  <p className="text-xs sm:text-sm">{message.content}</p>
                   <p className="text-xs sm:text-sm text-gray-400">
                     {timeAgo(message.timeStamp)}
                   </p>
@@ -717,7 +719,7 @@ const ChatPage = () => {
         ))}
       </main>
 
-      {/* Input for message */}
+      {/* Chat Input Section */}
       <div className="fixed bottom-0 left-0 w-full z-10 flex justify-center">
         <div className="w-full sm:w-3/4 lg:w-2/4 px-4 py-2">
           <div className="flex items-center justify-between rounded-full w-full">
