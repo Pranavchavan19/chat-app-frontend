@@ -257,8 +257,6 @@
 // };
 
 // export default ChatPage;
-
-
 import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
@@ -271,47 +269,46 @@ import { getMessagess } from "../services/RoomService";
 import { timeAgo } from "../config/helper";
 
 const ChatPage = () => {
-  const {
-    roomId,
-    currentUser,
-    connected,
-    setConnected,
-    setRoomId,
-    setCurrentUser,
-  } = useChatContext();
-
+  const { roomId, currentUser, connected, setConnected, setRoomId, setCurrentUser } = useChatContext();
   const navigate = useNavigate();
+
+  // Redirect if not connected
   useEffect(() => {
-    if (!connected) {
-      navigate("/");
-    }
-  }, [connected, roomId, currentUser]);
+    if (!connected) navigate("/");
+  }, [connected, navigate]);
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const inputRef = useRef(null);
   const chatBoxRef = useRef(null);
   const [stompClient, setStompClient] = useState(null);
-  const [, forceUpdate] = useState(); // Used to trigger re-renders.
+  const [, setTimer] = useState(Date.now()); // Timer state to force re-render
 
-  // Periodically trigger re-renders for timestamps
+  // Periodic re-render to update timestamps
   useEffect(() => {
-    const interval = setInterval(() => forceUpdate({}), 1000);
-    return () => clearInterval(interval); // Clean up interval on unmount
+    const interval = setInterval(() => {
+      setTimer(Date.now());
+    }, 1000);
+
+    return () => clearInterval(interval); // Cleanup on component unmount
   }, []);
 
+  // Load messages when the component mounts or roomId changes
   useEffect(() => {
     async function loadMessages() {
       try {
         const messages = await getMessagess(roomId);
         setMessages(messages);
-      } catch (error) {}
+      } catch (error) {
+        console.error("Error loading messages:", error);
+      }
     }
     if (connected) {
       loadMessages();
     }
-  }, []);
+  }, [roomId, connected]);
 
+  // Scroll chatbox to the bottom when new messages arrive
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scroll({
@@ -321,6 +318,7 @@ const ChatPage = () => {
     }
   }, [messages]);
 
+  // WebSocket connection setup
   useEffect(() => {
     const connectWebSocket = () => {
       const sock = new SockJS(`${baseURL}/chat`);
@@ -328,7 +326,7 @@ const ChatPage = () => {
 
       client.connect({}, () => {
         setStompClient(client);
-        toast.success("connected");
+        toast.success("Connected to the chat!");
 
         client.subscribe(`/topic/room/${roomId}`, (message) => {
           const newMessage = JSON.parse(message.body);
@@ -340,69 +338,56 @@ const ChatPage = () => {
     if (connected) {
       connectWebSocket();
     }
-  }, [roomId]);
+  }, [roomId, connected]);
 
+  // Send a new message
   const sendMessage = async () => {
     if (stompClient && connected && input.trim()) {
       const message = {
         sender: currentUser,
         content: input,
         roomId: roomId,
-        timeStamp: new Date().toISOString(), // Add timestamp when sending
+        timeStamp: new Date().toISOString(), // Add a timestamp when sending
       };
 
-      stompClient.send(
-        `/app/sendMessage/${roomId}`,
-        {},
-        JSON.stringify(message)
-      );
+      stompClient.send(`/app/sendMessage/${roomId}`, {}, JSON.stringify(message));
       setInput("");
     }
   };
 
-  function handleLogout() {
+  // Handle user logout
+  const handleLogout = () => {
     stompClient.disconnect();
     setConnected(false);
     setRoomId("");
     setCurrentUser("");
     navigate("/");
-  }
+  };
 
   return (
     <div className="relative">
-      {/* Header for Laptop (Visible on larger screens) */}
-      <header className="dark:border-gray-700 fixed w-full dark:bg-gray-900 py-5 shadow flex justify-between items-center px-10 hidden sm:flex">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-semibold">
-            Room: <span>{roomId}</span>
-          </h1>
-        </div>
-        <div>
-          <h1 className="text-xl sm:text-2xl font-semibold">
-            User: <span>{currentUser}</span>
-          </h1>
-        </div>
-        <div>
-          <button
-            onClick={handleLogout}
-            className="dark:bg-red-500 dark:hover:bg-red-700 px-3 py-2 rounded-full text-sm sm:text-base"
-          >
-            Leave Room
-          </button>
-        </div>
+      {/* Header */}
+      <header className="dark:border-gray-700 fixed w-full dark:bg-gray-900 py-5 shadow flex justify-between items-center px-10">
+        <h1 className="text-xl sm:text-2xl font-semibold">
+          Room: <span>{roomId}</span>
+        </h1>
+        <h1 className="text-xl sm:text-2xl font-semibold">
+          User: <span>{currentUser}</span>
+        </h1>
+        <button
+          onClick={handleLogout}
+          className="dark:bg-red-500 dark:hover:bg-red-700 px-3 py-2 rounded-full text-sm sm:text-base"
+        >
+          Leave Room
+        </button>
       </header>
 
-      {/* Chat Box */}
-      <main
-        ref={chatBoxRef}
-        className="py-20 px-10 w-2/3 dark:bg-slate-600 mx-auto h-screen overflow-auto hidden sm:block"
-      >
+      {/* Chat Messages */}
+      <main ref={chatBoxRef} className="py-20 px-10 dark:bg-slate-600 mx-auto h-screen overflow-auto">
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`flex ${
-              message.sender === currentUser ? "justify-end" : "justify-start"
-            }`}
+            className={`flex ${message.sender === currentUser ? "justify-end" : "justify-start"}`}
           >
             <div
               className={`my-2 ${
@@ -412,34 +397,55 @@ const ChatPage = () => {
               <div className="flex flex-row gap-2">
                 <img
                   className="h-10 w-10"
-                  src={"https://avatar.iran.liara.run/public/43"}
-                  alt=""
+                  src="https://avatar.iran.liara.run/public/43"
+                  alt="Avatar"
                 />
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm sm:text-base font-bold">
-                    {message.sender}
-                  </p>
-                  <p className="text-sm sm:text-base">{message.content}</p>
-                  <p className="text-xs sm:text-sm text-gray-400">
-                    {timeAgo(message.timeStamp)}
-                  </p>
+                <div className="flex flex-col">
+                  <p className="text-sm font-bold">{message.sender}</p>
+                  <p className="text-sm">{message.content}</p>
+                  <p className="text-xs text-gray-400">{timeAgo(message.timeStamp)}</p>
                 </div>
               </div>
             </div>
           </div>
         ))}
       </main>
+
+      {/* Message Input */}
+      <div className="fixed bottom-0 left-0 w-full z-10 flex justify-center">
+        <div className="w-full sm:w-3/4 lg:w-2/4 px-4 py-2">
+          <div className="flex items-center justify-between rounded-full w-full">
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  sendMessage();
+                }
+              }}
+              type="text"
+              placeholder="Type your message here..."
+              className="w-full dark:border-gray-600 dark:bg-pink-800 px-3 py-2 rounded-full focus:outline-none text-sm sm:text-base"
+            />
+            <div className="flex gap-2 ml-2">
+              <button className="dark:bg-purple-600 h-8 w-8 flex justify-center items-center rounded-full hover:bg-purple-700 transition-all">
+                <MdAttachFile size={20} />
+              </button>
+              <button
+                onClick={sendMessage}
+                className="dark:bg-green-600 h-8 w-8 flex justify-center items-center rounded-full hover:bg-green-700 transition-all"
+              >
+                <MdSend size={20} />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default ChatPage;
-
-
-
-
-
-
 
 
 
