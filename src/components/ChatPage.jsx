@@ -261,6 +261,9 @@
 
 
 
+
+
+
 import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
@@ -329,7 +332,7 @@ const ChatPage = () => {
 
       client.connect({}, () => {
         setStompClient(client);
-        toast.success("connected");
+        toast.success("Connected to WebSocket");
 
         console.log("WebSocket connected");
 
