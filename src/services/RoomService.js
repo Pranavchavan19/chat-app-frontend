@@ -28,7 +28,7 @@ export const createRoomApi = async (roomDetail) => {
   try {
     const response = await httpClient.post("/api/v1/rooms", roomDetail, {
       headers: {
-        "Content-Type": "application/json", // Ensure the server expects this content type
+        "content-Type" : "text/plain" ,
       },
     });
     return response.data;
