@@ -962,7 +962,6 @@
 
 
 
-
 import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
@@ -1011,6 +1010,7 @@ const ChatPage = () => {
   const inputRef = useRef(null);
   const chatBoxRef = useRef(null);
   const [stompClient, setStompClient] = useState(null);
+  const [hasConnected, setHasConnected] = useState(false); // Track if user is connected for the first time
 
   // Connect WebSocket when the component mounts
   useEffect(() => {
@@ -1020,7 +1020,11 @@ const ChatPage = () => {
 
       client.connect({}, () => {
         setStompClient(client);
-        toast.success("Connected");
+
+        if (!hasConnected) {
+          toast.success("Connected");
+          setHasConnected(true); // Mark user as connected to avoid showing the toast repeatedly
+        }
 
         // Subscribe to room messages
         client.subscribe(`/topic/room/${roomId}`, (message) => {
@@ -1052,7 +1056,7 @@ const ChatPage = () => {
         stompClient.disconnect();
       }
     };
-  }, [roomId, connected, stompClient]);
+  }, [roomId, connected, stompClient, hasConnected]);
 
   // Scroll to bottom of chat when new messages arrive, but not when user is manually scrolling
   useEffect(() => {
@@ -1068,7 +1072,7 @@ const ChatPage = () => {
         });
       }
     }
-  }, [messages]); // Run this only when messages are updated
+  }, [messages]);
 
   // Send message function
   const sendMessage = async () => {
