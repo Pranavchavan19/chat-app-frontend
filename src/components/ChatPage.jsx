@@ -550,7 +550,6 @@
 
 
 
-
 import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
@@ -585,33 +584,7 @@ const ChatPage = () => {
   const chatBoxRef = useRef(null);
   const [stompClient, setStompClient] = useState(null);
 
-  // Load messages when connected
-  useEffect(() => {
-    async function loadMessages() {
-      try {
-        const messages = await getMessagess(roomId);
-        setMessages(messages);
-      } catch (error) {
-        console.log("Error loading messages:", error);
-      }
-    }
-
-    if (connected) {
-      loadMessages();
-    }
-  }, [roomId, connected]);
-
-  // Scroll to the bottom of the chat whenever messages change
-  useEffect(() => {
-    if (chatBoxRef.current) {
-      chatBoxRef.current.scroll({
-        top: chatBoxRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [messages]);
-
-  // Connect to WebSocket server (now listens to room messages on all devices)
+  // Connect WebSocket when the component mounts
   useEffect(() => {
     const connectWebSocket = () => {
       const sock = new SockJS(`${baseURL}/chat`);
@@ -621,11 +594,23 @@ const ChatPage = () => {
         setStompClient(client);
         toast.success("Connected");
 
-        // Subscribe to receive messages from the room
+        // Subscribe to room messages (this will push messages to all clients)
         client.subscribe(`/topic/room/${roomId}`, (message) => {
           const newMessage = JSON.parse(message.body);
           setMessages((prevMessages) => [...prevMessages, newMessage]);
         });
+
+        // Fetch initial messages once the WebSocket is connected
+        async function loadMessages() {
+          try {
+            const initialMessages = await getMessagess(roomId);
+            setMessages(initialMessages);
+          } catch (error) {
+            console.log("Error loading messages:", error);
+          }
+        }
+
+        loadMessages();
       });
     };
 
@@ -634,6 +619,16 @@ const ChatPage = () => {
     }
   }, [roomId, connected]);
 
+  // Scroll to the bottom of the chat when messages change
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scroll({
+        top: chatBoxRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages]);
+
   // Send message function
   const sendMessage = async () => {
     if (stompClient && connected && input.trim()) {
@@ -641,13 +636,13 @@ const ChatPage = () => {
         sender: currentUser,
         content: input,
         roomId: roomId,
-        timeStamp: Date.now(), // Add a timestamp for sorting and display
+        timeStamp: Date.now(), // Add timestamp to messages for proper sorting and display
       };
 
       // Immediately update the UI with the new message
       setMessages((prevMessages) => [...prevMessages, message]);
 
-      // Send the message to the backend via WebSocket
+      // Send the message via WebSocket to the backend
       stompClient.send(
         `/app/sendMessage/${roomId}`,
         {},
