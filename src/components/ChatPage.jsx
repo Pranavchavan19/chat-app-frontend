@@ -857,7 +857,7 @@ const ChatPage = () => {
         sender: currentUser,
         content: input,
         roomId: roomId,
-        timeStamp: Date.now(), // Add timestamp to messages for proper sorting and display
+        
       };
 
       setMessages((prevMessages) => [...prevMessages, message]);
