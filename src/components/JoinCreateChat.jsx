@@ -51,10 +51,29 @@ function JoinCreateChat() {
     }
   }
 
+  // async function createRoom() {
+  //   if (validateForm()) {
+  //     try {
+  //       const response = await createRoomApi(detail.roomId);
+  //       toast.success("Room created successfully!");
+  //       setCurrentUser(detail.userName);
+  //       setRoomId(response.roomId);
+  //       setConnected(true);
+  //       navigate("/chat");
+  //     } catch (error) {
+  //       if (error.status === 400) {
+  //         toast.error("Room already exists!");
+  //       } else {
+  //         console.error("Error in creating room");
+  //       }
+  //     }
+  //   }
+  // }
+
   async function createRoom() {
     if (validateForm()) {
       try {
-        const response = await createRoomApi(detail.roomId);
+        const response = await createRoomApi(detail.roomId); // Pass only the roomId as a string
         toast.success("Room created successfully!");
         setCurrentUser(detail.userName);
         setRoomId(response.roomId);
@@ -64,11 +83,14 @@ function JoinCreateChat() {
         if (error.status === 400) {
           toast.error("Room already exists!");
         } else {
-          console.error("Error in creating room");
+          console.error("Error in creating room", error);
+          toast.error("Error creating room!");
         }
       }
     }
   }
+  
+
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
