@@ -964,8 +964,7 @@
 
 
 
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";  // Ensure useRef is included here
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
 import { useNavigate } from "react-router";
