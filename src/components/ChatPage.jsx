@@ -805,8 +805,8 @@ const ChatPage = () => {
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const inputRef = useRef(null);
-  const chatBoxRef = useRef(null);
+  // const inputRef = useRef(null);
+  // const chatBoxRef = useRef(null);
   const [stompClient, setStompClient] = useState(null);
   const [hasJoined, setHasJoined] = useState(false); // Track if joined message has been shown
 
@@ -931,7 +931,7 @@ const ChatPage = () => {
     </header>
   
     <main
-      ref={chatBoxRef}
+      // ref={chatBoxRef}
       className="py-20 px-10 w-2/3 dark:bg-slate-600 mx-auto h-screen overflow-auto hidden sm:block"
     >
       {messages.map((message, index) => (
@@ -968,7 +968,7 @@ const ChatPage = () => {
     </main>
   
     <main
-      ref={chatBoxRef}
+      // ref={chatBoxRef}
       className="py-16 px-4 w-full dark:bg-slate-600 mx-auto h-screen overflow-auto sm:hidden"
     >
       {messages.map((message, index) => (
