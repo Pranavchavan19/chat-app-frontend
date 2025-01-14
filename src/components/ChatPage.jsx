@@ -1548,33 +1548,33 @@ const ChatPage = () => {
     navigate("/");
   };
 
-  // const handleScroll = () => {
-  //   const chatBox = chatBoxRef.current;
-  //   if (chatBox) {
-  //     // Detect if the user is scrolling up
-  //     const isAtBottom =
-  //       chatBox.scrollHeight === chatBox.scrollTop + chatBox.clientHeight;
-
-  //     if (!isAtBottom) {
-  //       // If the user is scrolling up, stop auto-scrolling
-  //       return;
-  //     }
-  //   }
-  // };
-
-  useEffect(() => {
+  const handleScroll = () => {
     const chatBox = chatBoxRef.current;
     if (chatBox) {
-      chatBox.addEventListener("scroll", handleScroll);
-    }
+      // Detect if the user is scrolling up
+      const isAtBottom =
+        chatBox.scrollHeight === chatBox.scrollTop + chatBox.clientHeight;
 
-    // Cleanup listener when component unmounts
-    return () => {
-      if (chatBox) {
-        chatBox.removeEventListener("scroll", handleScroll);
+      if (!isAtBottom) {
+        // If the user is scrolling up, stop auto-scrolling
+        return;
       }
-    };
-  }, []);
+    }
+  };
+
+  // useEffect(() => {
+  //   const chatBox = chatBoxRef.current;
+  //   if (chatBox) {
+  //     chatBox.addEventListener("scroll", handleScroll);
+  //   }
+
+  //   // Cleanup listener when component unmounts
+  //   return () => {
+  //     if (chatBox) {
+  //       chatBox.removeEventListener("scroll", handleScroll);
+  //     }
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (chatBoxRef.current) {
