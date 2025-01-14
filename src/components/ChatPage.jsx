@@ -963,8 +963,7 @@
 
 
 
-
-import React, { useEffect, useRef, useState } from "react";  // Ensure useRef is included here
+import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
 import { useNavigate } from "react-router";
@@ -973,7 +972,22 @@ import { Stomp } from "@stomp/stompjs";
 import toast from "react-hot-toast";
 import { baseURL } from "../config/AxiosHelper";
 import { getMessagess } from "../services/RoomService";
-import { timeAgo } from "../config/helper";
+
+// Time ago function
+const timeAgo = (timestamp) => {
+  const now = new Date();
+  const diff = now - timestamp;
+  
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(diff / (1000 * 60));
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  if (seconds < 60) return `${seconds} seconds ago`;
+  if (minutes < 60) return `${minutes} minutes ago`;
+  if (hours < 24) return `${hours} hours ago`;
+  return `${days} days ago`;
+};
 
 const ChatPage = () => {
   const {
@@ -997,22 +1011,8 @@ const ChatPage = () => {
   const inputRef = useRef(null);
   const chatBoxRef = useRef(null);
   const [stompClient, setStompClient] = useState(null);
-  const [hasJoined, setHasJoined] = useState(false);
 
-  // Function to update the timestamps dynamically every minute
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setMessages((prevMessages) => {
-        return prevMessages.map((message) => ({
-          ...message,
-          timeAgo: timeAgo(message.timeStamp),
-        }));
-      });
-    }, 60000); // Update every minute
-
-    return () => clearInterval(intervalId); // Cleanup on unmount
-  }, []);
-
+  // Connect WebSocket when the component mounts
   useEffect(() => {
     const connectWebSocket = () => {
       const sock = new SockJS(`${baseURL}/chat`);
@@ -1020,16 +1020,15 @@ const ChatPage = () => {
 
       client.connect({}, () => {
         setStompClient(client);
-        if (!hasJoined) {
-          toast.success("Connected");
-          setHasJoined(true);
-        }
+        toast.success("Connected");
 
+        // Subscribe to room messages
         client.subscribe(`/topic/room/${roomId}`, (message) => {
           const newMessage = JSON.parse(message.body);
           setMessages((prevMessages) => [...prevMessages, newMessage]);
         });
 
+        // Fetch initial messages once the WebSocket is connected
         async function loadMessages() {
           try {
             const initialMessages = await getMessagess(roomId);
@@ -1047,38 +1046,52 @@ const ChatPage = () => {
       connectWebSocket();
     }
 
+    // Cleanup on component unmount
     return () => {
       if (stompClient) {
         stompClient.disconnect();
       }
     };
-  }, [roomId, connected, stompClient, hasJoined]);
+  }, [roomId, connected, stompClient]);
 
+  // Scroll to bottom of chat when new messages arrive, but not when user is manually scrolling
   useEffect(() => {
     if (chatBoxRef.current) {
-      chatBoxRef.current.scroll({
-        top: chatBoxRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [messages]);
+      const isAtBottom =
+        chatBoxRef.current.scrollHeight ===
+        chatBoxRef.current.scrollTop + chatBoxRef.current.clientHeight;
 
+      if (isAtBottom) {
+        chatBoxRef.current.scroll({
+          top: chatBoxRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }
+  }, [messages]); // Run this only when messages are updated
+
+  // Send message function
   const sendMessage = async () => {
     if (stompClient && connected && input.trim()) {
       const message = {
         sender: currentUser,
         content: input,
         roomId: roomId,
-        timeStamp: Date.now(),
+        timeStamp: Date.now(), // Add timestamp to messages for proper sorting and display
       };
 
+      // Immediately update the UI with the new message
       setMessages((prevMessages) => [...prevMessages, message]);
 
+      // Send the message via WebSocket to the backend
       stompClient.send(`/app/sendMessage/${roomId}`, {}, JSON.stringify(message));
+
+      // Clear the input field
       setInput("");
     }
   };
 
+  // Handle logout (disconnect WebSocket and clear user data)
   function handleLogout() {
     stompClient.disconnect();
     setConnected(false);
@@ -1110,16 +1123,32 @@ const ChatPage = () => {
         </div>
       </header>
 
+      {/* Mobile Chat Layout */}
       <main ref={chatBoxRef} className="py-16 px-4 w-full dark:bg-slate-600 mx-auto h-screen overflow-auto sm:hidden">
         {messages.map((message, index) => (
-          <div key={index} className={`flex ${message.sender === currentUser ? "justify-end" : "justify-start"}`}>
-            <div className={`my-2 ${message.sender === currentUser ? "bg-green-800" : "bg-gray-800"} p-2 max-w-xs rounded`}>
+          <div
+            key={index}
+            className={`flex ${
+              message.sender === currentUser ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div
+              className={`my-2 ${
+                message.sender === currentUser ? "bg-green-800" : "bg-gray-800"
+              } p-2 max-w-xs rounded`}
+            >
               <div className="flex flex-row gap-2">
-                <img className="h-8 w-8" src={"https://avatar.iran.liara.run/public/43"} alt="" />
+                <img
+                  className="h-8 w-8"
+                  src={"https://avatar.iran.liara.run/public/43"}
+                  alt=""
+                />
                 <div className="flex flex-col gap-1">
                   <p className="text-xs sm:text-sm font-bold">{message.sender}</p>
                   <p className="text-xs sm:text-sm">{message.content}</p>
-                  <p className="text-xs sm:text-sm text-gray-400">{message.timeAgo || timeAgo(message.timeStamp)}</p>
+                  <p className="text-xs sm:text-sm text-gray-400">
+                    {timeAgo(message.timeStamp)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -1127,6 +1156,7 @@ const ChatPage = () => {
         ))}
       </main>
 
+      {/* Chat Input Section */}
       <div className="fixed bottom-0 left-0 w-full z-10 flex justify-center">
         <div className="w-full sm:w-3/4 lg:w-2/4 px-4 py-2">
           <div className="flex items-center justify-between rounded-full w-full">
