@@ -1,13 +1,13 @@
 import { httpClient } from "../config/AxiosHelper"
 
-export const createRoomApi = async (roomDetail) => {
-  const response = await httpClient.post(`/api/v1/rooms`,roomDetail,{
-    headers:{
-       "content-Type" : "text/plain" ,
-    },
-  })
-  return response.data;
-};
+// export const createRoomApi = async (roomDetail) => {
+//   const response = await httpClient.post(`/api/v1/rooms`,roomDetail,{
+//     headers:{
+//        "content-Type" : "text/plain" ,
+//     },
+//   })
+//   return response.data;
+// };
 
 // export const joinChatApi = async (roomId) => {
       
@@ -24,20 +24,19 @@ export const createRoomApi = async (roomDetail) => {
 
 
 
-// export const createRoomApi = async (roomDetail) => {
-//   try {
-//     const roomId = typeof roomDetail === "string" ? roomDetail : roomDetail.roomId;
-//     const response = await httpClient.post(`/api/v1/rooms`, roomId, {
-//       headers: {
-//         "Content-Type": "text/plain",
-//       },
-//     });
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error in createRoomApi:", error);
-//     throw error.response?.data || "Failed to create room.";
-//   }
-// };
+export const createRoomApi = async (roomDetail) => {
+  try {
+    const response = await httpClient.post("/api/v1/rooms", roomDetail, {
+      headers: {
+        "Content-Type": "application/json", // Ensure the server expects this content type
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error in creating room:", error.response ? error.response.data : error.message);
+    throw error; // Optionally, you can rethrow the error
+  }
+};
 
 
 export const joinChatApi = async (roomId) => {
