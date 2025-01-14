@@ -1548,19 +1548,19 @@ const ChatPage = () => {
     navigate("/");
   };
 
-  const handleScroll = () => {
-    const chatBox = chatBoxRef.current;
-    if (chatBox) {
-      // Detect if the user is scrolling up
-      const isAtBottom =
-        chatBox.scrollHeight === chatBox.scrollTop + chatBox.clientHeight;
+  // const handleScroll = () => {
+  //   const chatBox = chatBoxRef.current;
+  //   if (chatBox) {
+  //     // Detect if the user is scrolling up
+  //     const isAtBottom =
+  //       chatBox.scrollHeight === chatBox.scrollTop + chatBox.clientHeight;
 
-      if (!isAtBottom) {
-        // If the user is scrolling up, stop auto-scrolling
-        return;
-      }
-    }
-  };
+  //     if (!isAtBottom) {
+  //       // If the user is scrolling up, stop auto-scrolling
+  //       return;
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     const chatBox = chatBoxRef.current;
