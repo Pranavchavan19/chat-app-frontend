@@ -261,7 +261,6 @@
 
 
 
-
 import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
@@ -285,7 +284,6 @@ const ChatPage = () => {
 
   const navigate = useNavigate();
 
-  // If the user is not connected, navigate to home
   useEffect(() => {
     if (!connected) {
       navigate("/");
@@ -338,8 +336,16 @@ const ChatPage = () => {
         // Subscribe to the topic for receiving messages
         client.subscribe(`/topic/room/${roomId}`, (message) => {
           const newMessage = JSON.parse(message.body);
+
+          // Debugging: Log incoming message to check its structure
           console.log("Received new message:", newMessage);
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+          // Check if the new message has the required properties
+          if (newMessage && newMessage.sender && newMessage.content) {
+            setMessages((prevMessages) => [...prevMessages, newMessage]);
+          } else {
+            console.error("Invalid message format received:", newMessage);
+          }
         });
       }, (error) => {
         console.error("WebSocket connection failed:", error);
