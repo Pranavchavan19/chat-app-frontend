@@ -262,7 +262,6 @@
 
 
 
-
 import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
@@ -285,6 +284,8 @@ const ChatPage = () => {
   } = useChatContext();
 
   const navigate = useNavigate();
+
+  // If the user is not connected, navigate to home
   useEffect(() => {
     if (!connected) {
       navigate("/");
@@ -297,20 +298,22 @@ const ChatPage = () => {
   const chatBoxRef = useRef(null);
   const [stompClient, setStompClient] = useState(null);
 
-  // Load initial messages when the user enters the room
+  // Fetch initial messages when connected
   useEffect(() => {
     async function loadMessages() {
       try {
         const messages = await getMessagess(roomId);
         setMessages(messages);
-      } catch (error) {}
+      } catch (error) {
+        console.error("Failed to load messages:", error);
+      }
     }
     if (connected) {
       loadMessages();
     }
   }, [connected, roomId]);
 
-  // Scroll chat box to the bottom when a new message arrives
+  // Scroll chat box to the bottom when new messages arrive
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scroll({
@@ -320,7 +323,7 @@ const ChatPage = () => {
     }
   }, [messages]);
 
-  // WebSocket connection and message subscription
+  // WebSocket connection setup
   useEffect(() => {
     const connectWebSocket = () => {
       const sock = new SockJS(`${baseURL}/chat`);
@@ -330,13 +333,17 @@ const ChatPage = () => {
         setStompClient(client);
         toast.success("connected");
 
-        // Subscribe to the room's message topic
+        console.log("WebSocket connected");
+
+        // Subscribe to the topic for receiving messages
         client.subscribe(`/topic/room/${roomId}`, (message) => {
           const newMessage = JSON.parse(message.body);
+          console.log("Received new message:", newMessage);
           setMessages((prevMessages) => [...prevMessages, newMessage]);
         });
-      }, (err) => {
-        toast.error("Error connecting to WebSocket: " + err);
+      }, (error) => {
+        console.error("WebSocket connection failed:", error);
+        toast.error("Failed to connect to WebSocket.");
       });
     };
 
@@ -344,14 +351,15 @@ const ChatPage = () => {
       connectWebSocket();
     }
 
-    // Cleanup WebSocket connection on component unmount
+    // Cleanup WebSocket connection when the component unmounts
     return () => {
       if (stompClient) {
         stompClient.disconnect();
       }
     };
-  }, [roomId, connected, stompClient]);
+  }, [roomId, connected]);
 
+  // Sending a new message
   const sendMessage = async () => {
     if (stompClient && connected && input.trim()) {
       const message = {
@@ -360,15 +368,18 @@ const ChatPage = () => {
         roomId: roomId,
       };
 
+      console.log("Sending message:", message);
+
       stompClient.send(
         `/app/sendMessage/${roomId}`,
         {},
         JSON.stringify(message)
       );
-      setInput("");  // Clear input after sending
+      setInput("");  // Clear input field after sending
     }
   };
 
+  // Handle logout
   function handleLogout() {
     stompClient.disconnect();
     setConnected(false);
@@ -379,7 +390,7 @@ const ChatPage = () => {
 
   return (
     <div className="relative">
-      {/* Header for Laptop (Visible on larger screens) */}
+      {/* Header for Laptop */}
       <header className="dark:border-gray-700 fixed w-full dark:bg-gray-900 py-5 shadow flex justify-between items-center px-10 hidden sm:flex">
         <div>
           <h1 className="text-xl sm:text-2xl font-semibold">
