@@ -47,3 +47,4 @@ export function getSendTime() {
   const time = new Date().toLocaleTimeString([], options);
   return time;
 }
+console.log(getSendTime());

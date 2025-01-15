@@ -182,7 +182,8 @@ const ChatPage = () => {
                   </p>
                   <p className="text-sm sm:text-base">{message.content}</p>
                   <p className="text-xs sm:text-sm text-gray-400">
-                  {message.timeSent}
+                    {/* {timeAgo(message.timeStamp)} */}
+                    {message.timeSent}
                   </p>
                 </div>
               </div>
@@ -226,7 +227,7 @@ const ChatPage = () => {
                   <p className="text-xs sm:text-sm font-bold">{message.sender}</p>
                   <p className="text-xs sm:text-sm">{message.content}</p>
                   <p className="text-xs sm:text-sm text-gray-400">
-                  {message.timeSent}
+                   {message.timeSent}
                   </p>
                 </div>
               </div>
