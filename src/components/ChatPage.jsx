@@ -272,7 +272,6 @@
 
 
 
-
 import React, { useRef, useState, useEffect } from 'react';
 import { MdAttachFile, MdSend } from "react-icons/md";
 import { useNavigate } from 'react-router';
@@ -303,6 +302,7 @@ const ChatPage = () => {
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [imagePreview, setImagePreview] = useState(null); // State to hold image preview
   const inputRef = useRef(null);
   const chatBoxRef = useRef(null);
   const [stompClient, setStompClient] = useState(null);
@@ -364,6 +364,7 @@ const ChatPage = () => {
         JSON.stringify(message)
       );
       setInput('');
+      setImagePreview(null); // Reset the image preview after sending
     }
   };
 
@@ -371,7 +372,15 @@ const ChatPage = () => {
     const file = event.target.files[0];  // Get the selected file
     if (file) {
       setInput(file.name);  // Set the file name in the input box
-      // You can upload the file here if needed (e.g., to a server)
+
+      // Display image preview if it's an image
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result);  // Set the image preview URL
+        };
+        reader.readAsDataURL(file);  // Read the image file
+      }
     }
   };
 
@@ -407,29 +416,7 @@ const ChatPage = () => {
         </div>
       </header>
 
-      {/* Header for Mobile */}
-      <header className="dark:border-gray-700 fixed w-full dark:bg-gray-900 py-5 shadow flex justify-between items-center px-4 sm:hidden">
-        <div>
-          <h1 className="text-sm sm:text-base font-semibold">
-            Room: <span>{roomId}</span>
-          </h1>
-        </div>
-        <div>
-          <h1 className="text-sm sm:text-base font-semibold">
-            User: <span>{currentUser}</span>
-          </h1>
-        </div>
-        <div>
-          <button
-            onClick={handleLogout}
-            className="dark:bg-red-500 dark:hover:bg-red-700 px-3 py-2 rounded-full text-xs sm:text-sm"
-          >
-            Leave Room
-          </button>
-        </div>
-      </header>
-
-      {/* Chat Box for Laptop */}
+      {/* Chat Box */}
       <main
         ref={chatBoxRef}
         className="py-20 px-10 w-2/3 dark:bg-slate-600 mx-auto h-screen overflow-auto hidden sm:block"
@@ -467,43 +454,7 @@ const ChatPage = () => {
         ))}
       </main>
 
-      {/* Chat Box for Mobile */}
-      <main
-        ref={chatBoxRef}
-        className="py-16 px-4 w-full dark:bg-slate-600 mx-auto h-screen overflow-auto sm:hidden"
-      >
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`flex ${
-              message.sender === currentUser ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`my-2 ${
-                message.sender === currentUser ? "bg-green-800" : "bg-gray-800"
-              } p-2 max-w-xs rounded`}
-            >
-              <div className="flex flex-row gap-2">
-                <img
-                  className="h-8 w-8"
-                  src={"https://avatar.iran.liara.run/public/43"}
-                  alt=""
-                />
-                <div className="flex flex-col gap-1">
-                  <p className="text-xs sm:text-sm font-bold">{message.sender}</p>
-                  <p className="text-xs sm:text-sm">{message.content}</p>
-                  <p className="text-xs sm:text-sm text-gray-400">
-                    {timeAgo(message.timeStamp)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </main>
-
-      {/* Chat Input Section */}
+      {/* Input and Send Section */}
       <div className="fixed bottom-0 left-0 w-full z-10 flex justify-center">
         <div className="w-full sm:w-3/4 lg:w-2/4 px-4 py-2">
           <div className="flex items-center justify-between rounded-full w-full">
@@ -547,6 +498,17 @@ const ChatPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Display Image Preview */}
+      {imagePreview && (
+        <div className="fixed bottom-16 left-0 right-0 flex justify-center">
+          <img
+            src={imagePreview}
+            alt="Selected File"
+            className="w-48 h-48 object-contain rounded-lg"
+          />
+        </div>
+      )}
     </div>
   );
 };
