@@ -106,12 +106,4 @@ export function getSendTime(timestamp) {
 
 // Example usage
 console.log("Current Time:", getSendTime()); // For the current time
-import moment from 'moment';
 
-export function getSendTime(timestamp) {
-  if (!timestamp) {
-    return "Invalid Time";
-  }
-
-  return moment(timestamp).format('hh:mm A'); // Format time to 12-hour format with AM/PM
-}
