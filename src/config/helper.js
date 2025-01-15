@@ -16,72 +16,18 @@
 //     return `${yearsAgo} years ago`;
 //   }
   
+import moment from 'moment-timezone';
 
-//   console.log(timeAgo("2025-01-08T06:15:26Z")); 
-
-
-// export function timeAgo() {
-//   const options = { 
-//     hour: '2-digit', 
-//     minute: '2-digit', 
-//     hour12: true  // This option ensures AM/PM format
-//   };
-
-//   // Get the current local time formatted in 12-hour format
-//   const time = new Date().toLocaleTimeString([], options);
-//   return time;
-// }
-
-// // Example usage in your component
-// console.log(timeAgo()); // e.g., "12:38 PM"
-
-
-// export function getSendTime(timestamp) {
-//   const options = { 
-//     hour: '2-digit', 
-//     minute: '2-digit', 
-//     hour12: true // This option ensures AM/PM format
-//   };
-
-//   // Convert the timestamp to a Date object and format it
-//   const time = new Date(timestamp).toLocaleTimeString([], options);
-//   return time;
-// }
-
-// console.log(getSendTime());
-
-// export function getSendTime(timestamp) {
-//   const options = { 
-//     hour: '2-digit', 
-//     minute: '2-digit', 
-//     hour12: true, // AM/PM format
-//     timeZone: 'UTC' // Set the time zone if necessary (e.g., UTC or a specific time zone)
-//   };
-
-//   // Convert the timestamp to a Date object and format it
-//   const time = new Date(timestamp).toLocaleTimeString([], options);
-//   return time;
-// }
-
-// console.log(getSendTime(new Date().toISOString()));  // Using current time for testing
-
-
-
-import moment from 'moment';
-
-// This function formats the timestamp as 12-hour time with AM/PM
 export function getSendTime(timestamp) {
   if (!timestamp) {
     return "Invalid Time";
   }
 
-  return moment(timestamp).format('h:mm A'); // Format time to 12-hour format with AM/PM
+  // Convert the UTC timestamp to Kolkata time (Indian Standard Time)
+  return moment(timestamp)
+    .tz('Asia/Kolkata')  // Convert to IST (Indian Standard Time)
+    .format('h:mm A');   // Format time to 12-hour format with AM/PM
 }
-
-
-// // Example usage
-// console.log("Current Time:", getSendTime()); // For the current time
-
 
 
 console.log("Current Time:", getSendTime());
