@@ -20,17 +20,30 @@
 //   console.log(timeAgo("2025-01-08T06:15:26Z")); 
 
 
-export function timeAgo() {
+// export function timeAgo() {
+//   const options = { 
+//     hour: '2-digit', 
+//     minute: '2-digit', 
+//     hour12: true  // This option ensures AM/PM format
+//   };
+
+//   // Get the current local time formatted in 12-hour format
+//   const time = new Date().toLocaleTimeString([], options);
+//   return time;
+// }
+
+// // Example usage in your component
+// console.log(timeAgo()); // e.g., "12:38 PM"
+
+
+export function getSendTime() {
   const options = { 
     hour: '2-digit', 
     minute: '2-digit', 
-    hour12: true  // This option ensures AM/PM format
+    hour12: true // This option ensures AM/PM format
   };
 
   // Get the current local time formatted in 12-hour format
   const time = new Date().toLocaleTimeString([], options);
   return time;
 }
-
-// Example usage in your component
-console.log(timeAgo()); // e.g., "12:38 PM"
