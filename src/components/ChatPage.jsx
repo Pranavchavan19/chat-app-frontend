@@ -207,7 +207,7 @@ const ChatPage = () => {
               <div className="flex flex-row gap-2">
                 <img
                   className="h-8 w-8"
-                  src={"https://avatar.iran.liara.run/public/43"}
+                  src={"https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-173524.jpg?ga=GA1.1.445864076.1734670647&semt=ais_hybrid"} 
                   alt=""
                 />
                 <div className="flex flex-col gap-1">
