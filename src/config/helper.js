@@ -67,17 +67,15 @@
 
 
 
-export function getSendTime(timestamp = new Date()) {
-  const options = { 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    hour12: true, // AM/PM format
-    timeZone: 'Asia/Kolkata' // Replace with your desired time zone, e.g., 'Asia/Kolkata' for Indian Standard Time
-  };
+import moment from 'moment';
 
-  // Convert the timestamp to a Date object and format it
-  const time = new Date(timestamp).toLocaleTimeString('en-US', options);
-  return time;
+// This function formats the timestamp as 12-hour time with AM/PM
+export function getSendTime(timestamp) {
+  if (!timestamp) {
+    return "Invalid Time";
+  }
+
+  return moment(timestamp).format('h:mm A'); // Format time to 12-hour format with AM/PM
 }
 
 

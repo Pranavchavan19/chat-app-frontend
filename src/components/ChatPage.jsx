@@ -229,7 +229,7 @@ const ChatPage = () => {
                   <p className="text-xs sm:text-sm font-bold">{message.sender}</p>
                   <p className="text-xs sm:text-sm">{message.content}</p>
                   <p className="text-xs sm:text-sm text-gray-400">
-                  {message.timeStamp}
+                  {getSendTime(message.timeStamp)}
                  
                   </p>
                 </div>
