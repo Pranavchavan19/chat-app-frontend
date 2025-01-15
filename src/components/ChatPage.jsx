@@ -85,7 +85,7 @@ const ChatPage = () => {
         sender: currentUser,
         content: input,
         roomId: roomId,
-        timeSent: getSendTime()
+        timeStamp: getSendTime()
       };
 
       stompClient.send(
@@ -183,7 +183,7 @@ const ChatPage = () => {
                   <p className="text-sm sm:text-base">{message.content}</p>
                   <p className="text-xs sm:text-sm text-gray-400">
                     {/* {timeAgo(message.timeStamp)} */}
-                    {message.timeSent}
+                    {getSendTime(message.timeStamp)}
                   </p>
                 </div>
               </div>
@@ -227,7 +227,7 @@ const ChatPage = () => {
                   <p className="text-xs sm:text-sm font-bold">{message.sender}</p>
                   <p className="text-xs sm:text-sm">{message.content}</p>
                   <p className="text-xs sm:text-sm text-gray-400">
-                   {message.timeSent}
+                  {getSendTime(message.timeStamp)}
                   </p>
                 </div>
               </div>
