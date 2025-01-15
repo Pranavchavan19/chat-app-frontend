@@ -23,11 +23,12 @@ export function getSendTime(timestamp) {
     return "Invalid Time";
   }
 
-  // Convert the UTC timestamp to Kolkata time (Indian Standard Time)
-  return moment(timestamp)
-    .tz('Asia/Kolkata')  // Convert to IST (Indian Standard Time)
-    .format('h:mm A');   // Format time to 12-hour format with AM/PM
+  // Parse UTC timestamp and convert to IST (Indian Standard Time)
+  return moment.utc(timestamp)       // Parse as UTC
+    .tz('Asia/Kolkata')               // Convert to Kolkata (IST)
+    .format('h:mm A');                // Format to 12-hour format with AM/PM
 }
+
 
 
 console.log("Current Time:", getSendTime());
