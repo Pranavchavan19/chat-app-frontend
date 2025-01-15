@@ -240,14 +240,14 @@ const ChatPage = () => {
         className="w-full dark:border-gray-600 dark:bg-pink-800 px-4 py-2.5 rounded-full focus:outline-none text-sm sm:text-base"
       />
       <div className="flex gap-2 ml-2">
-        <button className="dark:bg-purple-600 h-8 w-8 flex justify-center items-center rounded-full hover:bg-purple-700 transition-all">
-          <MdAttachFile size={26} />
+        <button className="dark:bg-purple-600 h-10 w-10 flex justify-center items-center rounded-full hover:bg-purple-700 transition-all">
+          <MdAttachFile size={23} />
         </button>
         <button
           onClick={sendMessage}
-          className="dark:bg-green-600 h-8 w-8 flex justify-center items-center rounded-full hover:bg-green-700 transition-all"
+          className="dark:bg-green-600 h-10 w-10 flex justify-center items-center rounded-full hover:bg-green-700 transition-all"
         >
-          <MdSend size={26} />
+          <MdSend size={23} />
         </button>
       </div>
     </div>
