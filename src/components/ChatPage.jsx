@@ -9,7 +9,6 @@
 // import { baseURL } from "../config/AxiosHelper";
 // import { getMessagess } from "../services/RoomService";
 // import { timeAgo } from "../config/helper";
-// import EmojiPicker from "emoji-picker-react";
 
 
 // const ChatPage = () => {
@@ -224,7 +223,7 @@
 //         ))}
 //       </main>
 
-// {/* 
+
 // <div className="fixed bottom-0 left-0 w-full z-10 flex justify-center">
 //   <div className="w-full sm:w-3/4 lg:w-2/4 px-4 py-2">
 //     <div className="flex items-center justify-between rounded-full w-full">
@@ -253,7 +252,7 @@
 //       </div>
 //     </div>
 //   </div>
-// </div> */}
+// </div>
 
 
 
@@ -277,205 +276,40 @@
 
 
 
-
-
-
-
-
-
-
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useRef } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
-import useChatContext from "../context/ChatContext";
-import { useNavigate } from "react-router";
-import SockJS from "sockjs-client";
-import { Stomp } from "@stomp/stompjs";
-import toast from "react-hot-toast";
-import { baseURL } from "../config/AxiosHelper";
-import { getMessagess } from "../services/RoomService";
-import { timeAgo } from "../config/helper";
 import EmojiPicker from "emoji-picker-react";
 
 const ChatPage = () => {
-  const {
-    roomId,
-    currentUser,
-    connected,
-    setConnected,
-    setRoomId,
-    setCurrentUser,
-  } = useChatContext();
-
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (!connected) {
-      navigate("/");
-    }
-  }, [connected, roomId, currentUser]);
-
-  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const inputRef = useRef(null);
-  const chatBoxRef = useRef(null);
-  const [stompClient, setStompClient] = useState(null);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Emoji picker toggle state
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    async function loadMessages() {
-      try {
-        const messages = await getMessagess(roomId);
-        setMessages(messages);
-      } catch (error) {}
-    }
-    if (connected) {
-      loadMessages();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (chatBoxRef.current) {
-      chatBoxRef.current.scroll({
-        top: chatBoxRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [messages]);
-
-  useEffect(() => {
-    const connectWebSocket = () => {
-      const sock = new SockJS(`${baseURL}/chat`);
-      const client = Stomp.over(sock);
-
-      client.connect({}, () => {
-        setStompClient(client);
-        toast.success("connected");
-
-        client.subscribe(`/topic/room/${roomId}`, (message) => {
-          const newMessage = JSON.parse(message.body);
-          setMessages((prev) => [...prev, newMessage]);
-        });
-      });
-    };
-
-    if (connected) {
-      connectWebSocket();
-    }
-  }, [roomId]);
-
-  const sendMessage = async () => {
-    if (stompClient && connected && input.trim()) {
-      const message = {
-        sender: currentUser,
-        content: input,
-        roomId: roomId,
-      };
-
-      stompClient.send(
-        `/app/sendMessage/${roomId}`,
-        {},
-        JSON.stringify(message)
-      );
-      setInput(""); // Clear input field after sending the message
+  const handleFileChange = (event) => {
+    const file = event.target.files[0]; // Get the first selected file
+    if (file) {
+      // Here you can send the file to your backend or display it in the chat
+      console.log("Selected file:", file);
+      setInput(file.name); // Optional: Display file name in input box
+      // You can implement sending the file to the backend here
     }
   };
 
-  function handleLogout() {
-    stompClient.disconnect();
-    setConnected(false);
-    setRoomId("");
-    setCurrentUser("");
-    navigate("/");
-  }
-
-  // Function to replace emoji codes with actual image tags
-  const replaceEmojisWithImages = (text) => {
-    const emojiMap = {
-      "😊": "https://twemoji.maxcdn.com/v/latest/72x72/1f60a.png", // Example emoji
-      "😀": "https://twemoji.maxcdn.com/v/latest/72x72/1f600.png",
-      // Add more emojis here
-    };
-
-    return text.replace(/([😊😀])/g, (match) => {
-      const emojiImage = emojiMap[match];
-      return emojiImage ? `<img src="${emojiImage}" alt="${match}" class="emoji" />` : match;
-    });
+  const sendMessage = () => {
+    // Logic to send message
+    console.log("Message Sent:", input);
+    setInput(""); // Clear the input field after sending
   };
 
   return (
     <div className="relative">
-      {/* Header for Laptop (Visible on larger screens) */}
-      <header className="dark:border-gray-700 fixed w-full dark:bg-gray-900 py-5 shadow flex justify-between items-center px-10 hidden sm:flex">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-semibold">
-            Room: <span>{roomId}</span>
-          </h1>
-        </div>
-        <div>
-          <h1 className="text-xl sm:text-2xl font-semibold">
-            User: <span>{currentUser}</span>
-          </h1>
-        </div>
-        <div>
-          <button
-            onClick={handleLogout}
-            className="dark:bg-red-500 dark:hover:bg-red-700 px-3 py-2 rounded-full text-sm sm:text-base"
-          >
-            Leave Room
-          </button>
-        </div>
-      </header>
-
-      {/* Chat Box for Laptop */}
-      <main
-        ref={chatBoxRef}
-        className="py-20 px-10 w-2/3 dark:bg-slate-600 mx-auto h-screen overflow-auto hidden sm:block"
-      >
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`flex ${
-              message.sender === currentUser ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`my-2 ${
-                message.sender === currentUser ? "bg-green-800" : "bg-gray-800"
-              } p-2 max-w-xs rounded`}
-            >
-              <div className="flex flex-row gap-2">
-                <img
-                  className="h-10 w-10"
-                  src={"https://avatar.iran.liara.run/public/43"}
-                  alt=""
-                />
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm sm:text-base font-bold">
-                    {message.sender}
-                  </p>
-                  <p className="text-sm sm:text-base">
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: replaceEmojisWithImages(message.content), // Render emoji images
-                      }}
-                    />
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-400">
-                    {timeAgo(message.timeStamp)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </main>
-
-      {/* Input area */}
+      {/* Chat Input Area */}
       <div className="fixed bottom-0 left-0 w-full z-10 flex justify-center">
         <div className="w-full sm:w-3/4 lg:w-2/4 px-4 py-2">
-          <div className="flex items-center justify-between rounded-full w-full relative">
+          <div className="flex items-center justify-between rounded-full w-full">
             <input
               value={input}
-              onChange={(e) => setInput(e.target.value)} // Normal input change handler
+              onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   sendMessage();
@@ -486,7 +320,7 @@ const ChatPage = () => {
               className="w-full dark:border-gray-600 dark:bg-pink-800 px-3 py-2 rounded-full focus:outline-none text-sm sm:text-base"
             />
             <div className="flex gap-2 ml-2">
-              {/* Emoji Picker Icon */}
+              {/* Emoji Picker Button */}
               <button
                 onClick={() => setShowEmojiPicker((prev) => !prev)}
                 className="dark:bg-yellow-500 h-8 w-8 flex justify-center items-center rounded-full hover:bg-yellow-600 transition-all"
@@ -500,16 +334,30 @@ const ChatPage = () => {
                   <EmojiPicker
                     onEmojiClick={(event, emojiObject) => {
                       if (emojiObject && emojiObject.emoji) {
-                        setInput((prev) => prev + emojiObject.emoji); // Add emoji text to input box
+                        setInput((prev) => prev + emojiObject.emoji); // Add emoji to input box as text
                       }
                     }}
                   />
                 </div>
               )}
 
-              <button className="dark:bg-purple-600 h-8 w-8 flex justify-center items-center rounded-full hover:bg-purple-700 transition-all">
+              {/* Attach File Button */}
+              <button
+                onClick={() => fileInputRef.current.click()} // Trigger file input on button click
+                className="dark:bg-purple-600 h-8 w-8 flex justify-center items-center rounded-full hover:bg-purple-700 transition-all"
+              >
                 <MdAttachFile size={20} />
               </button>
+              {/* Hidden file input for selecting images and videos */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/*,video/*" // Allow image and video files
+              />
+
+              {/* Send Message Button */}
               <button
                 onClick={sendMessage}
                 className="dark:bg-green-600 h-8 w-8 flex justify-center items-center rounded-full hover:bg-green-700 transition-all"
