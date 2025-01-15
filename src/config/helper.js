@@ -86,33 +86,32 @@
 
 
 
-
 export function getSendTime(timestamp) {
-  try {
-    // Define options for formatting the time
-    const options = {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true, // AM/PM format
-      timeZone: "Asia/Kolkata", // Adjust as per your timezone
-    };
-
-    // Create a Date object from the timestamp
-    const date = new Date(timestamp);
-
-    // Validate the Date object to ensure it's not invalid
-    if (isNaN(date.getTime())) {
-      console.error("Invalid timestamp provided:", timestamp);
-      return "Invalid Time";
-    }
-
-    // Format the time using toLocaleTimeString
-    return date.toLocaleTimeString("en-US", options);
-  } catch (error) {
-    console.error("Error formatting timestamp:", error);
-    return "Invalid Time";
+  if (!timestamp || isNaN(timestamp)) {
+    console.error("Invalid timestamp:", timestamp);
+    return "Invalid Time"; // Return if timestamp is invalid
   }
+
+  const options = { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: true // 12-hour format (AM/PM)
+  };
+
+  // Ensure correct formatting
+  const time = new Date(timestamp).toLocaleTimeString([], options);
+  return time;
 }
+
 
 // Example usage
 console.log("Current Time:", getSendTime()); // For the current time
+import moment from 'moment';
+
+export function getSendTime(timestamp) {
+  if (!timestamp) {
+    return "Invalid Time";
+  }
+
+  return moment(timestamp).format('hh:mm A'); // Format time to 12-hour format with AM/PM
+}

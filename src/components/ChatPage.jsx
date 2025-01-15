@@ -35,7 +35,7 @@ const ChatPage = () => {
   const chatBoxRef = useRef(null);
   const [stompClient, setStompClient] = useState(null);
 
-
+  
 
   useEffect(() => {
     async function loadMessages() {
@@ -230,7 +230,8 @@ const ChatPage = () => {
                   <p className="text-xs sm:text-sm">{message.content}</p>
                   <p className="text-xs sm:text-sm text-gray-400">
                   {/* {getSendTime(message.timeStamp)} */}
-                  {message.timeStamp ? getSendTime(message.timeStamp) : "Time Not Available"}
+                  {message.timeStamp ? getSendTime(message.timeStamp) : getSendTime(Date.now())}
+                 
                   </p>
                 </div>
               </div>
