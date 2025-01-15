@@ -67,17 +67,51 @@
 
 
 
-export function getSendTime(timestamp = new Date()) {
-  const options = { 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    hour12: true, // AM/PM format
-    timeZone: 'Asia/Kolkata' // Replace with your desired time zone, e.g., 'Asia/Kolkata' for Indian Standard Time
-  };
+// export function getSendTime(timestamp = new Date()) {
+//   const options = { 
+//     hour: '2-digit', 
+//     minute: '2-digit', 
+//     hour12: true, // AM/PM format
+//     timeZone: 'Asia/Kolkata' // Replace with your desired time zone, e.g., 'Asia/Kolkata' for Indian Standard Time
+//   };
 
-  // Convert the timestamp to a Date object and format it
-  const time = new Date(timestamp).toLocaleTimeString('en-US', options);
-  return time;
+//   // Convert the timestamp to a Date object and format it
+//   const time = new Date(timestamp).toLocaleTimeString('en-US', options);
+//   return time;
+// }
+
+
+
+
+
+
+
+
+export function getSendTime(timestamp) {
+  try {
+    // Define options for formatting the time
+    const options = {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true, // AM/PM format
+      timeZone: "Asia/Kolkata", // Adjust as per your timezone
+    };
+
+    // Create a Date object from the timestamp
+    const date = new Date(timestamp);
+
+    // Validate the Date object to ensure it's not invalid
+    if (isNaN(date.getTime())) {
+      console.error("Invalid timestamp provided:", timestamp);
+      return "Invalid Time";
+    }
+
+    // Format the time using toLocaleTimeString
+    return date.toLocaleTimeString("en-US", options);
+  } catch (error) {
+    console.error("Error formatting timestamp:", error);
+    return "Invalid Time";
+  }
 }
 
 // Example usage
