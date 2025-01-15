@@ -86,6 +86,7 @@ const ChatPage = () => {
         content: input,
         roomId: roomId,
         // timeStamp: getSendTime()
+        timeStamp: Date.now(),
       };
 
       stompClient.send(
