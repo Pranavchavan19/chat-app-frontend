@@ -271,7 +271,6 @@
 // export default ChatPage;
 
 
-
 import React, { useRef, useState, useEffect } from 'react';
 import { MdAttachFile, MdSend } from "react-icons/md";
 import { useNavigate } from 'react-router';
@@ -351,20 +350,29 @@ const ChatPage = () => {
   }, [roomId, connected]);
 
   const sendMessage = () => {
-    if (stompClient && connected && input.trim()) {
-      const message = {
-        sender: currentUser,
-        content: input,
-        roomId: roomId,
-      };
+    if (stompClient && connected) {
+      let messageContent = input;
 
-      stompClient.send(
-        `/app/sendMessage/${roomId}`,
-        {},
-        JSON.stringify(message)
-      );
-      setInput('');
-      setImagePreview(null); // Reset the image preview after sending
+      // If the input is an image preview, set the message content as the image URL
+      if (imagePreview) {
+        messageContent = imagePreview;  // Use the image URL as the message content
+      }
+
+      if (messageContent.trim()) {
+        const message = {
+          sender: currentUser,
+          content: messageContent,
+          roomId: roomId,
+        };
+
+        stompClient.send(
+          `/app/sendMessage/${roomId}`,
+          {},
+          JSON.stringify(message)
+        );
+        setInput(''); // Clear input
+        setImagePreview(null); // Clear image preview after sending the message
+      }
     }
   };
 
@@ -443,7 +451,16 @@ const ChatPage = () => {
                   <p className="text-sm sm:text-base font-bold">
                     {message.sender}
                   </p>
-                  <p className="text-sm sm:text-base">{message.content}</p>
+                  {/* If message is an image URL, display it as an image */}
+                  {message.content.startsWith('data:image') ? (
+                    <img
+                      src={message.content}
+                      alt="Sent Image"
+                      className="w-32 h-32 object-contain rounded-lg"
+                    />
+                  ) : (
+                    <p className="text-sm sm:text-base">{message.content}</p>
+                  )}
                   <p className="text-xs sm:text-sm text-gray-400">
                     {timeAgo(message.timeStamp)}
                   </p>
