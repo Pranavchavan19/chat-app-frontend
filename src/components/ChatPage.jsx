@@ -294,31 +294,7 @@ import { baseURL } from "../config/AxiosHelper";
 import { getMessagess } from "../services/RoomService";
 import { getSendTime } from "../config/helper";
 
-export function getSendTime(timestamp) {
-  try {
-    const options = {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true, // AM/PM format
-      timeZone: "Asia/Kolkata", // Adjust as per your timezone
-    };
 
-    // Create a new Date object from the timestamp
-    const date = new Date(timestamp);
-
-    // Validate the Date object
-    if (isNaN(date)) {
-      console.error("Invalid timestamp:", timestamp);
-      return "Invalid Time";
-    }
-
-    // Format the time using toLocaleTimeString
-    return date.toLocaleTimeString("en-US", options);
-  } catch (error) {
-    console.error("Error formatting timestamp:", error);
-    return "Invalid Time";
-  }
-}
 
 const ChatPage = () => {
   const {
