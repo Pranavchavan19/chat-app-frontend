@@ -19,26 +19,11 @@
 
 //   console.log(timeAgo("2025-01-08T06:15:26Z")); 
 
-
 export function timeAgo(date) {
-  const now = new Date();
-  const past = new Date(date);
-
-  // Convert the date to the local time zone
-  const secondsAgo = Math.floor((now.getTime() - past.getTime()) / 1000);
-
-  if (secondsAgo < 60) return `${secondsAgo} seconds ago`;
-  const minutesAgo = Math.floor(secondsAgo / 60);
-  if (minutesAgo < 60) return `${minutesAgo} minutes ago`;
-  const hoursAgo = Math.floor(minutesAgo / 60);
-  if (hoursAgo < 24) return `${hoursAgo} hours ago`;
-  const daysAgo = Math.floor(hoursAgo / 24);
-  if (daysAgo < 30) return `${daysAgo} days ago`;
-  const monthsAgo = Math.floor(daysAgo / 30);
-  if (monthsAgo < 12) return `${monthsAgo} months ago`;
-  const yearsAgo = Math.floor(monthsAgo / 12);
-  return `${yearsAgo} years ago`;
+  const options = { hour: '2-digit', minute: '2-digit', hour12: true }; // Format for 12-hour time
+  const time = new Date(date).toLocaleTimeString([], options); // Use locale format for time
+  return time;
 }
 
-// Example usage
-console.log(timeAgo("2025-01-08T06:15:26Z")); // Should display correct time difference.
+// Example usage:
+console.log(timeAgo("2025-01-08T14:49:26Z")); // Should display "2:49 PM"

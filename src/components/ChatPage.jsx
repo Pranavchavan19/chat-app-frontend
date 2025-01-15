@@ -180,8 +180,7 @@ const ChatPage = () => {
                   </p>
                   <p className="text-sm sm:text-base">{message.content}</p>
                   <p className="text-xs sm:text-sm text-gray-400">
-                    {/* {timeAgo(message.timeStamp)} */}
-                    {new Date().toLocaleTimeString()}
+                    {timeAgo(message.timeStamp)}
                   </p>
                 </div>
               </div>
