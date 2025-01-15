@@ -272,6 +272,8 @@
 // export default ChatPage;
 
 
+
+
 import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
@@ -479,7 +481,7 @@ const ChatPage = () => {
           <div className="flex items-center justify-between rounded-full w-full relative">
             <input
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => setInput(e.target.value)} // Normal input change handler
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   sendMessage();
@@ -503,9 +505,8 @@ const ChatPage = () => {
                 <div className="absolute bottom-12 right-0 bg-white dark:bg-gray-800 p-2 rounded shadow-lg">
                   <EmojiPicker
                     onEmojiClick={(event, emojiObject) => {
-                      if (emojiObject && emojiObject.emoji) {
-                        setInput((prev) => prev + emojiObject.emoji); // Append emoji to input
-                      }
+                      // Appending the emoji to the input box
+                      setInput((prev) => prev + emojiObject.emoji);
                     }}
                   />
                 </div>
