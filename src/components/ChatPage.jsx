@@ -69,6 +69,7 @@ const ChatPage = () => {
 
         client.subscribe(`/topic/room/${roomId}`, (message) => {
           const newMessage = JSON.parse(message.body);
+          console.log("Incoming message:", newMessage);
           setMessages((prev) => [...prev, newMessage]);
         });
       });
@@ -229,9 +230,7 @@ const ChatPage = () => {
                   <p className="text-xs sm:text-sm">{message.content}</p>
                   <p className="text-xs sm:text-sm text-gray-400">
                   {/* {getSendTime(message.timeStamp)} */}
-                  {message.timeStamp
-                      ? getSendTime(message.timeStamp)
-                      : "Unknown Time"}
+                  {message.timeStamp ? getSendTime(message.timeStamp) : "Time Not Available"}
                   </p>
                 </div>
               </div>
