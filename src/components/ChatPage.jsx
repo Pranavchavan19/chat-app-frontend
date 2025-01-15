@@ -273,6 +273,19 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
@@ -427,43 +440,13 @@ const ChatPage = () => {
                   <p className="text-sm sm:text-base font-bold">
                     {message.sender}
                   </p>
-                  <p className="text-sm sm:text-base">{message.content}</p>
-                  <p className="text-xs sm:text-sm text-gray-400">
-                    {timeAgo(message.timeStamp)}
+                  <p className="text-sm sm:text-base">
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: message.content, // Render the content with emoji images
+                      }}
+                    />
                   </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </main>
-
-      {/* Chat Box for Mobile */}
-      <main
-        ref={chatBoxRef}
-        className="py-16 px-4 w-full dark:bg-slate-600 mx-auto h-screen overflow-auto sm:hidden"
-      >
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`flex ${
-              message.sender === currentUser ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`my-2 ${
-                message.sender === currentUser ? "bg-green-800" : "bg-gray-800"
-              } p-2 max-w-xs rounded`}
-            >
-              <div className="flex flex-row gap-2">
-                <img
-                  className="h-8 w-8"
-                  src={"https://avatar.iran.liara.run/public/43"}
-                  alt=""
-                />
-                <div className="flex flex-col gap-1">
-                  <p className="text-xs sm:text-sm font-bold">{message.sender}</p>
-                  <p className="text-xs sm:text-sm">{message.content}</p>
                   <p className="text-xs sm:text-sm text-gray-400">
                     {timeAgo(message.timeStamp)}
                   </p>
@@ -504,9 +487,8 @@ const ChatPage = () => {
                 <div className="absolute bottom-12 right-0 bg-white dark:bg-gray-800 p-2 rounded shadow-lg">
                   <EmojiPicker
                     onEmojiClick={(event, emojiObject) => {
-                      // Only add emoji if valid
                       if (emojiObject && emojiObject.emoji) {
-                        setInput((prev) => prev + emojiObject.emoji); // Append emoji to input
+                        setInput((prev) => prev + `<img src="${emojiObject.emoji}" alt="emoji" class="emoji" />`); // Add image tag to input
                       }
                     }}
                   />
