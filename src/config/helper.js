@@ -50,17 +50,35 @@
 
 // console.log(getSendTime());
 
-export function getSendTime(timestamp) {
+// export function getSendTime(timestamp) {
+//   const options = { 
+//     hour: '2-digit', 
+//     minute: '2-digit', 
+//     hour12: true, // AM/PM format
+//     timeZone: 'UTC' // Set the time zone if necessary (e.g., UTC or a specific time zone)
+//   };
+
+//   // Convert the timestamp to a Date object and format it
+//   const time = new Date(timestamp).toLocaleTimeString([], options);
+//   return time;
+// }
+
+// console.log(getSendTime(new Date().toISOString()));  // Using current time for testing
+
+
+
+export function getSendTime(timestamp = new Date()) {
   const options = { 
     hour: '2-digit', 
     minute: '2-digit', 
     hour12: true, // AM/PM format
-    timeZone: 'UTC' // Set the time zone if necessary (e.g., UTC or a specific time zone)
+    timeZone: 'Asia/Kolkata' // Replace with your desired time zone, e.g., 'Asia/Kolkata' for Indian Standard Time
   };
 
   // Convert the timestamp to a Date object and format it
-  const time = new Date(timestamp).toLocaleTimeString([], options);
+  const time = new Date(timestamp).toLocaleTimeString('en-US', options);
   return time;
 }
 
-console.log(getSendTime(new Date().toISOString()));  // Using current time for testing
+// Example usage
+console.log("Current Time:", getSendTime()); // For the current time
