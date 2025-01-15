@@ -185,7 +185,7 @@ const ChatPage = () => {
                   <p className="text-sm sm:text-base">{message.content}</p>
                   <p className="text-xs sm:text-sm text-gray-400">
                     {/* {timeAgo(message.timeStamp)} */}
-                    {getSendTime(message.Date.now())}
+                    {getSendTime(message.timeStamp)}
                   </p>
                 </div>
               </div>

@@ -67,28 +67,31 @@
 
 
 
-export function getSendTime(timestamp = new Date()) {
-  const options = { 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    hour12: true, // AM/PM format
-    timeZone: 'Asia/Kolkata' // Replace with your desired time zone, e.g., 'Asia/Kolkata' for Indian Standard Time
-  };
+// export function getSendTime(timestamp = new Date()) {
+//   const options = { 
+//     hour: '2-digit', 
+//     minute: '2-digit', 
+//     hour12: true, // AM/PM format
+//     timeZone: 'Asia/Kolkata' // Replace with your desired time zone, e.g., 'Asia/Kolkata' for Indian Standard Time
+//   };
 
-  // Convert the timestamp to a Date object and format it
-  const time = new Date(timestamp).toLocaleTimeString('en-US', options);
-  return time;
+//   // Convert the timestamp to a Date object and format it
+//   const time = new Date(timestamp).toLocaleTimeString('en-US', options);
+//   return time;
+// }
+
+
+// // Example usage
+// console.log("Current Time:", getSendTime()); // For the current time
+
+
+import moment from 'moment';
+
+export function getSendTime(timestamp) {
+  // Check if timestamp is a valid number or date
+  if (!timestamp || isNaN(new Date(timestamp).getTime())) {
+    return "Invalid Time";
+  }
+
+  return moment(timestamp).format('hh:mm A'); // Format time to 12-hour format with AM/PM
 }
-
-
-
-
-
-
-
-
-
-
-// Example usage
-console.log("Current Time:", getSendTime()); // For the current time
-
