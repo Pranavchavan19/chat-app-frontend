@@ -14,4 +14,4 @@ export function getSendTime(timestamp) {
 
 
 
-console.log("Current Time:", getSendTime(timestamp));
+console.log("Current Time:", getSendTime());
