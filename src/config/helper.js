@@ -19,11 +19,18 @@
 
 //   console.log(timeAgo("2025-01-08T06:15:26Z")); 
 
-export function timeAgo(date) {
-  const options = { hour: '2-digit', minute: '2-digit', hour12: true }; // Format for 12-hour time
-  const time = new Date(date).toLocaleTimeString([], options); // Use locale format for time
+
+export function timeAgo() {
+  const options = { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: true  // This option ensures AM/PM format
+  };
+
+  // Get the current local time formatted in 12-hour format
+  const time = new Date().toLocaleTimeString([], options);
   return time;
 }
 
-// Example usage:
-console.log(timeAgo("2025-01-08T14:49:26Z")); // Should display "2:49 PM"
+// Example usage in your component
+console.log(timeAgo()); // e.g., "12:38 PM"
