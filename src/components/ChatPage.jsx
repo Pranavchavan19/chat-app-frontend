@@ -167,11 +167,13 @@ const ChatPage = () => {
               } p-2 max-w-xs rounded`}
             >
               <div className="flex flex-row gap-2">
-                <img
-                  className="h-10 w-10"
-                  src={"https://avatar.iran.liara.run/public/43"}
-                  alt=""
-                />
+              <img
+  className="h-8 w-8 rounded-full"
+  src={message.sender === currentUser 
+    ? "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-173524.jpg?ga=GA1.1.445864076.1734670647&semt=ais_hybrid" 
+    : "https://img.freepik.com/free-vector/smiling-redhaired-boy-illustration_1308-176664.jpg?ga=GA1.1.445864076.1734670647&semt=ais_hybrid"} 
+  alt="User Avatar"
+/>
                 <div className="flex flex-col gap-1">
                   <p className="text-sm sm:text-base font-bold">
                     {message.sender}
@@ -202,7 +204,7 @@ const ChatPage = () => {
             <div
               className={`my-2 ${
                 message.sender === currentUser ? "bg-green-800" : "bg-gray-800"
-              } p-2 max-w-xs rounded`}
+              } p-2 max-w-xl rounded`}
             >
               <div className="flex flex-row gap-2"> 
                 {/* <img
@@ -214,7 +216,7 @@ const ChatPage = () => {
   className="h-8 w-8 rounded-full"
   src={message.sender === currentUser 
     ? "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-173524.jpg?ga=GA1.1.445864076.1734670647&semt=ais_hybrid" 
-    : "https://img.freepik.com/free-vector/smiling-young-man-with-glasses_1308-174435.jpg?ga=GA1.1.445864076.1734670647&semt=ais_hybrid"} 
+    : "https://img.freepik.com/free-vector/smiling-redhaired-boy-illustration_1308-176664.jpg?ga=GA1.1.445864076.1734670647&semt=ais_hybrid"} 
   alt="User Avatar"
 />
 
