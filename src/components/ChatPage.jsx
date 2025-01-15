@@ -272,7 +272,6 @@
 // export default ChatPage;
 
 
-
 import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
@@ -307,7 +306,7 @@ const ChatPage = () => {
   const inputRef = useRef(null);
   const chatBoxRef = useRef(null);
   const [stompClient, setStompClient] = useState(null);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Emoji state
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Emoji picker toggle state
 
   useEffect(() => {
     async function loadMessages() {
@@ -364,7 +363,7 @@ const ChatPage = () => {
         {},
         JSON.stringify(message)
       );
-      setInput("");
+      setInput(""); // Clear input field after sending the message
     }
   };
 
@@ -394,28 +393,6 @@ const ChatPage = () => {
           <button
             onClick={handleLogout}
             className="dark:bg-red-500 dark:hover:bg-red-700 px-3 py-2 rounded-full text-sm sm:text-base"
-          >
-            Leave Room
-          </button>
-        </div>
-      </header>
-
-      {/* Header for Mobile (Visible on small screens) */}
-      <header className="dark:border-gray-700 fixed w-full dark:bg-gray-900 py-5 shadow flex justify-between items-center px-4 sm:hidden">
-        <div>
-          <h1 className="text-sm sm:text-base font-semibold">
-            Room: <span>{roomId}</span>
-          </h1>
-        </div>
-        <div>
-          <h1 className="text-sm sm:text-base font-semibold">
-            User: <span>{currentUser}</span>
-          </h1>
-        </div>
-        <div>
-          <button
-            onClick={handleLogout}
-            className="dark:bg-red-500 dark:hover:bg-red-700 px-3 py-2 rounded-full text-xs sm:text-sm"
           >
             Leave Room
           </button>
