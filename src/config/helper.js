@@ -67,30 +67,23 @@
 
 
 
-// export function getSendTime(timestamp = new Date()) {
-//   const options = { 
-//     hour: '2-digit', 
-//     minute: '2-digit', 
-//     hour12: true, // AM/PM format
-//     timeZone: 'Asia/Kolkata' // Replace with your desired time zone, e.g., 'Asia/Kolkata' for Indian Standard Time
-//   };
+export function getSendTime(timestamp = new Date()) {
+  const options = { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: true, // AM/PM format
+    timeZone: 'Asia/Kolkata' // Replace with your desired time zone, e.g., 'Asia/Kolkata' for Indian Standard Time
+  };
 
-//   // Convert the timestamp to a Date object and format it
-//   const time = new Date(timestamp).toLocaleTimeString('en-US', options);
-//   return time;
-// }
+  // Convert the timestamp to a Date object and format it
+  const time = new Date(timestamp).toLocaleTimeString('en-US', options);
+  return time;
+}
 
 
 // // Example usage
 // console.log("Current Time:", getSendTime()); // For the current time
 
-export const getSendTime = (timestamp) => {
-  const date = new Date(timestamp);
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  const period = hours >= 12 ? "PM" : "AM";
-  const formattedTime = `${hours % 12 || 12}:${minutes < 10 ? "0" : ""}${minutes} ${period}`;
-  return formattedTime;
-};
+
 
 console.log("Current Time:", getSendTime());
