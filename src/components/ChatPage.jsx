@@ -273,7 +273,6 @@
 
 
 
-
 import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
@@ -505,8 +504,10 @@ const ChatPage = () => {
                 <div className="absolute bottom-12 right-0 bg-white dark:bg-gray-800 p-2 rounded shadow-lg">
                   <EmojiPicker
                     onEmojiClick={(event, emojiObject) => {
-                      // Appending the emoji to the input box
-                      setInput((prev) => prev + emojiObject.emoji);
+                      // Only add emoji if valid
+                      if (emojiObject && emojiObject.emoji) {
+                        setInput((prev) => prev + emojiObject.emoji); // Append emoji to input
+                      }
                     }}
                   />
                 </div>
