@@ -237,7 +237,7 @@ const ChatPage = () => {
         }}
         type="text"
         placeholder="Type your message here..."
-        className="w-full dark:border-gray-600 dark:bg-pink-800 px-4 py-3 rounded-full focus:outline-none text-sm sm:text-base"
+        className="w-full dark:border-gray-600 dark:bg-pink-800 px-4 py-2.5 rounded-full focus:outline-none text-sm sm:text-base"
       />
       <div className="flex gap-2 ml-2">
         <button className="dark:bg-purple-600 h-8 w-8 flex justify-center items-center rounded-full hover:bg-purple-700 transition-all">
