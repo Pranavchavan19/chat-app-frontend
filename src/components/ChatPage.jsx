@@ -284,8 +284,6 @@
 
 
 
-
-
 import React, { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
@@ -389,6 +387,20 @@ const ChatPage = () => {
     navigate("/");
   }
 
+  // Function to replace emoji codes with actual image tags
+  const replaceEmojisWithImages = (text) => {
+    const emojiMap = {
+      "😊": "https://twemoji.maxcdn.com/v/latest/72x72/1f60a.png", // Example emoji
+      "😀": "https://twemoji.maxcdn.com/v/latest/72x72/1f600.png",
+      // Add more emojis here
+    };
+
+    return text.replace(/([😊😀])/g, (match) => {
+      const emojiImage = emojiMap[match];
+      return emojiImage ? `<img src="${emojiImage}" alt="${match}" class="emoji" />` : match;
+    });
+  };
+
   return (
     <div className="relative">
       {/* Header for Laptop (Visible on larger screens) */}
@@ -443,7 +455,7 @@ const ChatPage = () => {
                   <p className="text-sm sm:text-base">
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: message.content, // Render the content with emoji images
+                        __html: replaceEmojisWithImages(message.content), // Render emoji images
                       }}
                     />
                   </p>
@@ -488,7 +500,7 @@ const ChatPage = () => {
                   <EmojiPicker
                     onEmojiClick={(event, emojiObject) => {
                       if (emojiObject && emojiObject.emoji) {
-                        setInput((prev) => prev + `<img src="${emojiObject.emoji}" alt="emoji" class="emoji" />`); // Add image tag to input
+                        setInput((prev) => prev + emojiObject.emoji); // Add emoji text to input box
                       }
                     }}
                   />
