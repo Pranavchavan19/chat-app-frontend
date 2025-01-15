@@ -84,14 +84,13 @@
 // // Example usage
 // console.log("Current Time:", getSendTime()); // For the current time
 
+export const getSendTime = (timestamp) => {
+  const date = new Date(timestamp);
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const period = hours >= 12 ? "PM" : "AM";
+  const formattedTime = `${hours % 12 || 12}:${minutes < 10 ? "0" : ""}${minutes} ${period}`;
+  return formattedTime;
+};
 
-import moment from 'moment';
-
-export function getSendTime(timestamp) {
-  // Check if timestamp is a valid number or date
-  if (!timestamp || isNaN(new Date(timestamp).getTime())) {
-    return "Invalid Time";
-  }
-
-  return moment(timestamp).format('hh:mm A'); // Format time to 12-hour format with AM/PM
-}
+console.log("Current Time:", getSendTime());
