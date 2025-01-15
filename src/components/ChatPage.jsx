@@ -526,7 +526,9 @@ const ChatPage = () => {
                 <div className="absolute bottom-12 right-0 bg-white dark:bg-gray-800 p-2 rounded shadow-lg">
                   <EmojiPicker
                     onEmojiClick={(event, emojiObject) => {
-                      setInput((prev) => prev + emojiObject.emoji); // Append emoji to input
+                      if (emojiObject && emojiObject.emoji) {
+                        setInput((prev) => prev + emojiObject.emoji); // Append emoji to input
+                      }
                     }}
                   />
                 </div>
