@@ -36,15 +36,16 @@
 // console.log(timeAgo()); // e.g., "12:38 PM"
 
 
-export function getSendTime() {
+export function getSendTime(timestamp) {
   const options = { 
     hour: '2-digit', 
     minute: '2-digit', 
     hour12: true // This option ensures AM/PM format
   };
 
-  // Get the current local time formatted in 12-hour format
-  const time = new Date().toLocaleTimeString([], options);
+  // Convert the timestamp to a Date object and format it
+  const time = new Date(timestamp).toLocaleTimeString([], options);
   return time;
 }
+
 console.log(getSendTime());
